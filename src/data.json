@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "name": "Tier 1",
+    "players": [
+      {
+        "name": "Player 1"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Tier 2",
+    "players": [
+      {
+        "name": "Player 2"
+      },
+      {
+        "name": "Player 3"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Tier 3",
+    "players": [
+      {
+        "name": "Player 4"
+      },
+      {
+        "name": "Player 5"
+      },{
+        "name": "Player 6"
+      },
+      {
+        "name": "Player 7"
+      },{
+        "name": "Player 8"
+      },
+      {
+        "name": "Player 9"
+      },{
+        "name": "Player 10"
+      },
+      {
+        "name": "Player 11"
+      },
+      {
+        "name": "Player 12"
+      }
+    ]
+  }
+]
