@@ -1,46 +1,147 @@
-# Getting Started with Create React App
+# KickerClub München Ladder
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React application for managing a foosball club challenge pyramid ladder system. Built with React, TypeScript, Vite, and Material-UI.
+
+## Features
+
+- 🏆 Pyramid-style ladder system with challenge rules
+- 🎯 Drag-and-drop challenge interface
+- 🎨 Modern UI with Material-UI v7
+- 🌙 Dark mode support
+- ⚡ Fast development with Vite
+- 🐳 Docker support for development and production
+
+## Prerequisites
+
+- Node.js 20+ and Yarn (for local development)
+- Docker and Docker Compose (for containerized development/production)
+
+## Local Development (Without Docker)
+
+1. Install dependencies:
+```bash
+yarn install
+```
+
+2. Create a `.env` file (optional):
+```bash
+VITE_API_URL=http://localhost:8000
+```
+
+3. Start the development server:
+```bash
+yarn dev
+```
+
+The app will be available at [http://localhost:3000](http://localhost:3000)
+
+## Docker Development
+
+### Quick Start
+
+Start the development server in Docker:
+```bash
+docker-compose up frontend-dev
+```
+
+The app will be available at [http://localhost:3000](http://localhost:3000) with hot-reload enabled.
+
+### Development Commands
+
+```bash
+# Start development server
+docker-compose up frontend-dev
+
+# Start in detached mode
+docker-compose up -d frontend-dev
+
+# View logs
+docker-compose logs -f frontend-dev
+
+# Stop the container
+docker-compose down
+```
+
+## Docker Production
+
+### Build and Run Production Container
+
+```bash
+# Build the production image
+docker build -t ladder-frontend:latest .
+
+# Run the production container
+docker run -d -p 8080:80 --name ladder-frontend ladder-frontend:latest
+```
+
+The app will be available at [http://localhost:8080](http://localhost:8080)
+
+### Using Docker Compose for Production
+
+```bash
+# Build and start production container
+docker-compose -f docker-compose.prod.yml up -d
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Stop the container
+docker-compose -f docker-compose.prod.yml down
+```
 
 ## Available Scripts
 
-In the project directory, you can run:
+- `yarn dev` - Start development server
+- `yarn build` - Build for production
+- `yarn preview` - Preview production build locally
+- `yarn test` - Run tests with Vitest
 
-### `yarn start`
+## Project Structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+ladder/
+├── src/
+│   ├── components/     # React components
+│   ├── hooks/          # Custom React hooks
+│   ├── services/        # API service layer
+│   ├── types/           # TypeScript type definitions
+│   └── utils/           # Utility functions
+├── public/              # Static assets
+├── Dockerfile           # Production Docker image
+├── Dockerfile.dev       # Development Docker image
+├── docker-compose.yml   # Development Docker Compose
+└── docker-compose.prod.yml  # Production Docker Compose
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Environment Variables
 
-### `yarn test`
+Create a `.env` file in the root directory:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```env
+VITE_API_URL=http://localhost:8000
+```
 
-### `yarn build`
+**Note:** In Vite, environment variables must be prefixed with `VITE_` to be exposed to the client.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Challenge Rules
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The ladder follows pyramid challenge rules:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Players can only challenge opponents ranked above them
+2. Challenge range is limited based on the player's row in the pyramid
+3. If the challenger wins, they swap positions with the opponent
+4. If the challenger loses, positions remain unchanged
 
-### `yarn eject`
+## Technology Stack
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- **React 18** - UI library
+- **TypeScript 5** - Type safety
+- **Vite 6** - Build tool and dev server
+- **Material-UI v7** - Component library
+- **React DnD** - Drag and drop functionality
+- **Vitest** - Testing framework
+- **Nginx** - Production web server (Docker)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## License
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Private project for KickerClub München

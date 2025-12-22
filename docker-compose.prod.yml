@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Frontend production build
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ladder-frontend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    networks:
+      - ladder-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  ladder-network:
+    driver: bridge
+

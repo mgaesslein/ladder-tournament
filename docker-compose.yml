@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Frontend development server
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: ladder-frontend-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks:
+      - ladder-network
+    stdin_open: true
+    tty: true
+
+  # Frontend production build
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ladder-frontend-prod
+    ports:
+      - "8080:80"
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    networks:
+      - ladder-network
+    profiles:
+      - production
+
+networks:
+  ladder-network:
+    driver: bridge
+
