@@ -1,46 +1,91 @@
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { Tier } from '../types';
+import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
+import { Tier, Player } from '../types';
+import { api } from '../services/api';
 
-const TiersContext = createContext<[Tier[], any, any]>([[], () => {}, () => {}]);
+interface TiersContextValue {
+  tiers: Tier[];
+  isLoading: boolean;
+  error: string | null;
+  draggedPlayer: Player | null;
+  setDraggedPlayer: (player: Player | null) => void;
+  fetchTiers: () => Promise<void>;
+  refreshTiers: () => Promise<void>;
+}
+
+const TiersContext = createContext<TiersContextValue | undefined>(undefined);
 
 type Props = {
-  children: ReactNode,
+  children: ReactNode;
 };
 
-export function TiersProvider({ children } : Props) {
+export function TiersProvider({ children }: Props) {
   const [tiers, setTiers] = useState<Tier[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [draggedPlayer, setDraggedPlayer] = useState<Player | null>(null);
+
+  const fetchTiers = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const players = await api.getPlayers();
+      
+      // Group players by row to create tiers
+      const tiersMap = new Map<number, Tier>();
+      
+      players.forEach((player) => {
+        const row = player.row;
+        if (!tiersMap.has(row)) {
+          tiersMap.set(row, {
+            id: row,
+            name: `Tier ${row}`,
+            players: [],
+          });
+        }
+        tiersMap.get(row)!.players.push(player);
+      });
+
+      // Convert map to array and sort by row
+      const sortedTiers = Array.from(tiersMap.values()).sort((a, b) => a.id - b.id);
+      setTiers(sortedTiers);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch players';
+      setError(errorMessage);
+      console.error('Error fetching tiers:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const refreshTiers = useCallback(async () => {
+    await fetchTiers();
+  }, [fetchTiers]);
 
   useEffect(() => {
     fetchTiers();
-  }, []);
+  }, [fetchTiers]);
 
-  const fetchTiers = async () => {
-    const response = await fetch('http://localhost:8000/players');
-    const data = await response.json();
-    const tiers = data.reduce((currentTiers: any, player: any) => {
-      if (currentTiers.length === 0 || !currentTiers[player.row-1]) {
-        currentTiers.push({
-          id: player.row,
-          name: player.row,
-          players: [player],
-        });
-        return currentTiers;
-      }
-        currentTiers[player.row-1].players.push(player);
-      
-      return currentTiers;
-    }, []);
-    
-    setTiers(tiers);
-  }
+  const value: TiersContextValue = {
+    tiers,
+    isLoading,
+    error,
+    draggedPlayer,
+    setDraggedPlayer,
+    fetchTiers,
+    refreshTiers,
+  };
 
   return (
-    <TiersContext.Provider value={[tiers, setTiers, fetchTiers]}>
+    <TiersContext.Provider value={value}>
       {children}
     </TiersContext.Provider>
   );
 }
 
-const useTiers = () => useContext(TiersContext);
-
-export default useTiers;
+export function useTiers(): TiersContextValue {
+  const context = useContext(TiersContext);
+  if (context === undefined) {
+    throw new Error('useTiers must be used within a TiersProvider');
+  }
+  return context;
+}
